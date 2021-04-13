@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
