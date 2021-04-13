@@ -1,0 +1,49 @@
+---
+project_name: kubectl-app-traffic
+
+builds:
+  - binary: kubectl-app-traffic
+    main: ./cli/main.go
+    ldflags:
+      - -s -w -X 'github.com/dodopizza/kubectl-app-traffic/Version=v{{ .Version }}'
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+
+archives:
+  - name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+
+checksum:
+  name_template: '{{ .ProjectName }}_checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - typo
+      - static check
+      - lint
+      - format
+      - tidy
+
+release:
+  name_template: "{{ .ProjectName }}-v{{ .Version }}"
+  prerelease: auto
