@@ -1,0 +1,91 @@
+---
+name: Publishing
+
+on:
+  pull_request: {}
+  push:
+    paths-ignore:
+      - '*.md'
+      - '**/*.md'
+    branches:
+      - master
+    tags:
+      - "*"
+
+env:
+  GOLANG_VERSION: "1.16"
+  GOLANG_CLI_VERSION: "v1.36"
+  GOLANG_RELEASER_VERSION: "v0.162.0"
+
+jobs:
+  format:
+    name: Format & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Format
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: ${{ env.GOLANG_CLI_VERSION }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          args: "--disable-all -E golint,goimports,misspell"
+      - name: Lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: ${{ env.GOLANG_CLI_VERSION }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  tidy:
+    name: Mod tidy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GOLANG_VERSION }}
+      - uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Run tidy
+        run: |
+          make tidy
+      - name: Check if working tree is dirty
+        run: |
+          if [[ $(git diff --stat) != '' ]]; then
+            git diff
+            echo 'run `make tidy` or `make prepare` and commit changes'
+            exit 1
+          fi
+
+  publish:
+    name: Publishing CLI
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GOLANG_VERSION }}
+      - uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: ${{ env.GOLANG_RELEASER_VERSION }}
+          args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
