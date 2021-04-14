@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 
 	flag "github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -51,10 +52,13 @@ func (opts *ToggleOptions) Patch(patch *Patch) error {
 	options := metav1.PatchOptions{
 		FieldManager: "kubectl-patch",
 	}
-	_, err = k8s.
+	svc, err := k8s.
 		CoreV1().
 		Services(*opts.Kube.Namespace).
 		Patch(context.Background(), opts.Service, types.JSONPatchType, body, options)
+	if err == nil {
+		fmt.Printf("Service %s/%s has been patched\n", svc.Namespace, svc.Name)
+	}
 	return err
 }
 
