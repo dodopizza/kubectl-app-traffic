@@ -1,11 +1,11 @@
 ---
-project_name: kubectl-app-traffic
+project_name: kubectl-app_traffic
 
 builds:
-  - binary: kubectl-app-traffic
+  - binary: kubectl-app_traffic
     main: ./cli/main.go
     ldflags:
-      - -s -w -X 'github.com/dodopizza/kubectl-app-traffic/Version=v{{ .Version }}'
+      - -s -w -X 'github.com/dodopizza/kubectl-app-traffic/cli/cmd.VersionTag=v{{ .Version }}'
     env:
       - CGO_ENABLED=0
     goos:

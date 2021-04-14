@@ -9,7 +9,7 @@ import (
 
 func main() {
 	command := &cobra.Command{
-		Use:          "kubectl-app-traffic",
+		Use:          "kubectl-app_traffic",
 		Short:        "Disable or enable traffic to k8s service",
 		SilenceUsage: true,
 	}
