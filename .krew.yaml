@@ -14,8 +14,8 @@ spec:
     - {{addURIAndSha "https://github.com/dodopizza/kubectl-app-traffic/releases/download/{{ .TagName }}/kubectl-app_traffic_Darwin_x86_64.tar.gz" .TagName | indent 6 }}
       bin: kubectl-app-traffic
       files:
-        - from: kubectl-app-traffic
-          to: .
+        - from: kubectl-app_traffic
+          to: kubectl-app-traffic
         - from: LICENSE
           to: .
       selector:
@@ -25,8 +25,8 @@ spec:
     - {{addURIAndSha "https://github.com/dodopizza/kubectl-app-traffic/releases/download/{{ .TagName }}/kubectl-app_traffic_Darwin_arm64.tar.gz" .TagName | indent 6 }}
       bin: kubectl-app-traffic
       files:
-        - from: kubectl-app-traffic
-          to: .
+        - from: kubectl-app_traffic
+          to: kubectl-app-traffic
         - from: LICENSE
           to: .
       selector:
@@ -36,8 +36,8 @@ spec:
     - {{addURIAndSha "https://github.com/dodopizza/kubectl-app-traffic/releases/download/{{ .TagName }}/kubectl-app_traffic_Linux_x86_64.tar.gz" .TagName | indent 6 }}
       bin: kubectl-app-traffic
       files:
-        - from: kubectl-app-traffic
-          to: .
+        - from: kubectl-app_traffic
+          to: kubectl-app-traffic
         - from: LICENSE
           to: .
       selector:
@@ -47,8 +47,8 @@ spec:
     - {{addURIAndSha "https://github.com/dodopizza/kubectl-app-traffic/releases/download/{{ .TagName }}/kubectl-app_traffic_Linux_arm64.tar.gz" .TagName | indent 6 }}
       bin: kubectl-app-traffic
       files:
-        - from: kubectl-app-traffic
-          to: .
+        - from: kubectl-app_traffic
+          to: kubectl-app-traffic
         - from: LICENSE
           to: .
       selector:
@@ -58,8 +58,8 @@ spec:
     - {{addURIAndSha "https://github.com/dodopizza/kubectl-app-traffic/releases/download/{{ .TagName }}/kubectl-app_traffic_Windows_x86_64.zip" .TagName | indent 6 }}
       bin: kubectl-app-traffic.exe
       files:
-        - from: kubectl-app-traffic.exe
-          to: .
+        - from: kubectl-app_traffic.exe
+          to: kubectl-app-traffic
         - from: LICENSE
           to: .
       selector:
