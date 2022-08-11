@@ -2,6 +2,8 @@ GREEN  := $(shell tput -Txterm setaf 2)
 YELLOW := $(shell tput -Txterm setaf 3)
 WHITE  := $(shell tput -Txterm setaf 7)
 RESET  := $(shell tput -Txterm sgr0)
+CURRENT_DIR := $(shell pwd)
+GIT_TAG := $(shell git tag -l --sort=-creatordate | head -n 1)
 
 .PHONY: all
 all: help
@@ -16,6 +18,16 @@ prepare: tidy lint
 .PHONY: tidy
 tidy:
 	go mod tidy -v
+
+.PHONY: plugin-template
+plugin-template:
+	docker run \
+		--rm \
+		-v ${CURRENT_DIR}/.krew.yaml:/tmp/template-file.yaml \
+		rajatjindal/krew-release-bot:v0.0.43 \
+		krew-release-bot template \
+		--tag "${GIT_TAG}" \
+		--template-file /tmp/template-file.yaml
 
 .PHONY: help
 help:
