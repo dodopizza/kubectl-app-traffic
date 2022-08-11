@@ -5,8 +5,8 @@ on:
   pull_request: {}
   push:
     paths-ignore:
-      - '*.md'
-      - '**/*.md'
+      - "*.md"
+      - "**/*.md"
     branches:
       - main
     tags:
@@ -83,9 +83,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v3
         with:
           version: ${{ env.GOLANG_RELEASER_VERSION }}
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update new version in krew-index
+        if: ${{ !contains(github.ref, 'beta') }}
+        uses: rajatjindal/krew-release-bot@v0.0.43
+        env:
+          UPSTREAM_KREW_INDEX_REPO_NAME: krew-index
+          UPSTREAM_KREW_INDEX_REPO_OWNER: dodopizza
