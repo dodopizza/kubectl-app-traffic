@@ -5,7 +5,7 @@ metadata:
 spec:
   homepage: https://github.com/dodopizza/kubectl-app-traffic
   shortDescription: Disable/Enable applicatoin traffic for service
-  version: {{ .TagName }}
+  version: v{{ .TagName }}
   description: |
     Plugin for disabling and enabling applicatoin traffic for service in Kubernetes.
   caveats: |
