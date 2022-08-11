@@ -24,17 +24,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Format
-        uses: golangci/golangci-lint-action@v2
+      - name: Setup Golang
+        uses: actions/setup-go@v2
         with:
-          version: ${{ env.GOLANG_CLI_VERSION }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          args: "--disable-all -E golint,goimports,misspell"
+          go-version: ${{ env.GOLANG_VERSION }}
       - name: Lint
         uses: golangci/golangci-lint-action@v2
         with:
           version: ${{ env.GOLANG_CLI_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          args: "--fix=false --timeout=10m"
+          skip-go-installation: true
 
   tidy:
     name: Mod tidy
