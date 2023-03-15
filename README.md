@@ -53,5 +53,5 @@ kubectl app-traffic -n bar enable ingress foo
 
 # Namespace flag can be omitted, in this case it will be used from current kube config
 # Disable traffic from ingress `foo`
-kubectl app-traffic disable foo
+kubectl app-traffic disable ingress foo
 ```
