@@ -13,6 +13,7 @@ import (
 
 type ToggleOptions struct {
 	Service string
+	Ingress string
 	Kube    *kube.ConfigFlags
 }
 
@@ -52,13 +53,25 @@ func (opts *ToggleOptions) Patch(patch *Patch) error {
 	options := metav1.PatchOptions{
 		FieldManager: "kubectl-patch",
 	}
-	svc, err := k8s.
-		CoreV1().
-		Services(*opts.Kube.Namespace).
-		Patch(context.Background(), opts.Service, types.JSONPatchType, body, options)
-	if err == nil {
-		fmt.Printf("Service %s/%s has been patched\n", svc.Namespace, svc.Name)
+
+	if opts.Service != "" {
+		svc, err := k8s.
+			CoreV1().
+			Services(*opts.Kube.Namespace).
+			Patch(context.Background(), opts.Service, types.JSONPatchType, body, options)
+		if err == nil {
+			fmt.Printf("Service %s/%s has been patched\n", svc.Namespace, svc.Name)
+		}
+	} else if opts.Ingress != "" {
+		ingress, err := k8s.
+			NetworkingV1().
+			Ingresses(*opts.Kube.Namespace).
+			Patch(context.Background(), opts.Ingress, types.JSONPatchType, body, options)
+		if err == nil {
+			fmt.Printf("Ingress %s/%s has been patched\n", ingress.Namespace, ingress.Name)
+		}
 	}
+
 	return err
 }
 

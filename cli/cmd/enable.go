@@ -10,17 +10,32 @@ import (
 func Enable() *cobra.Command {
 	options := &internal.ToggleOptions{}
 	command := &cobra.Command{
-		Use:   "enable [service]",
-		Short: "Enable traffic back to k8s service",
-		Args:  cobra.ExactArgs(1),
+		Use:   "enable service|ingress [service_name|ingress_name]",
+		Short: "Enable traffic back to k8s service or ingress",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options.Service = args[0]
-			patch := &internal.Patch{
-				Operation: "remove",
-				Path:      "/spec/selector/offline",
+			var patch *internal.Patch
+			switch args[0] {
+			case "service":
+				options.Service = args[1]
+				patch = &internal.Patch{
+					Operation: "remove",
+					Path:      "/spec/selector/offline",
+				}
+
+				fmt.Printf("Enable traffic to %s/%s\n", *options.Kube.Namespace, options.Service)
+			case "ingress":
+				options.Ingress = args[1]
+				patch = &internal.Patch{
+					Operation: "remove",
+					Path:      "/metadata/annotations/nginx.ingress.kubernetes.io~1whitelist-source-range",
+				}
+				fmt.Printf("Enable traffic to %s/%s\n", *options.Kube.Namespace, options.Ingress)
+			default:
+				fmt.Printf("Unknown resource")
+				return nil
 			}
 
-			fmt.Printf("Enable traffic to %s/%s\n", *options.Kube.Namespace, options.Service)
 			err := options.Patch(patch)
 			if err != nil {
 				fmt.Printf("Failed to enable traffic to %s/%s\nTraffic may be already enabled for this service\n",
