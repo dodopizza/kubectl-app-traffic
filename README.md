@@ -37,15 +37,21 @@ Move-Item -Path "kubectl-app_traffic_Windows_x86_64/kubectl-app_traffic_Windows_
 
 ```bash
 # Generic invocation
-kubectl app-traffic -n <namespace> <enable|disable> <service>
+kubectl app-traffic -n <namespace> <enable|disable> <service|ingress> <service_name|ingress_name>
 
 # Disable traffic from service 'foo' located in namespace 'bar'
-kubectl app-traffic -n bar disable foo
+kubectl app-traffic -n bar disable service foo
 
 # Enable traffic to service 'foo' (after it was disabled) located in namespace 'bar'
-kubectl app-traffic -n bar enable foo
+kubectl app-traffic -n bar enable service foo
+
+# Disable traffic from ingress 'foo' located in namespace 'bar'
+kubectl app-traffic -n bar disable ingress foo
+
+# Enable traffic to ingress 'foo' (after it was disabled) located in namespace 'bar'
+kubectl app-traffic -n bar enable ingress foo
 
 # Namespace flag can be omitted, in this case it will be used from current kube config
-# Disable traffic from service `foo`
-kubectl app-traffic disable foo
+# Disable traffic from ingress `foo`
+kubectl app-traffic disable ingress foo
 ```
