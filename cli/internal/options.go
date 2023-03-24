@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	flag "github.com/spf13/pflag"
+	networkv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
@@ -15,6 +16,7 @@ type ToggleOptions struct {
 	Service string
 	Ingress string
 	Kube    *kube.ConfigFlags
+	Host    *string
 }
 
 type Patch struct {
@@ -35,7 +37,11 @@ func (opts *ToggleOptions) Parse() *flag.FlagSet {
 	if err == nil {
 		opts.Kube.Namespace = stringptr(namespace)
 	}
+	var host string
+	fs.StringVar(&host, "host", "", "Domain name")
 	opts.Kube.AddFlags(fs)
+
+	opts.Host = &host
 	return fs
 }
 
@@ -82,4 +88,22 @@ func encode(patch *Patch) ([]byte, error) {
 
 func stringptr(s string) *string {
 	return &s
+}
+
+func (opts *ToggleOptions) GetIngress(resource string) (*networkv1.Ingress, error) {
+	k8s, err := NewClient(opts.Kube)
+	if err != nil {
+		return nil, err
+	}
+	options := metav1.GetOptions{}
+
+	ingress, err := k8s.
+		NetworkingV1().
+		Ingresses(*opts.Kube.Namespace).
+		Get(context.Background(), resource, options)
+	if err == nil {
+		fmt.Printf("Ingress %s/%s has been patched\n", ingress.Namespace, ingress.Name)
+	}
+
+	return ingress, nil
 }

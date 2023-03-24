@@ -26,10 +26,29 @@ func Enable() *cobra.Command {
 				fmt.Printf("Enable traffic to %s/%s\n", *options.Kube.Namespace, options.Service)
 			case "ingress":
 				options.Ingress = args[1]
-				patch = &internal.Patch{
-					Operation: "remove",
-					Path:      "/metadata/annotations/nginx.ingress.kubernetes.io~1whitelist-source-range",
+				if *options.Host != "" {
+					ingress, err := options.GetIngress(options.Ingress)
+					if err != nil {
+						fmt.Printf("Failed to disable traffic from %s/%s\n",
+							*options.Kube.Namespace,
+							args[1])
+					}
+					for id, rule := range ingress.Spec.Rules {
+						if rule.Host == fmt.Sprintf("app-traffic-disable.%s", *options.Host) {
+							patch = &internal.Patch{
+								Operation: "replace",
+								Path:      fmt.Sprintf("/spec/rules/%v/host", id),
+								Value:     options.Host,
+							}
+						}
+					}
+				} else {
+					patch = &internal.Patch{
+						Operation: "remove",
+						Path:      "/metadata/annotations/nginx.ingress.kubernetes.io~1whitelist-source-range",
+					}
 				}
+
 				fmt.Printf("Enable traffic to %s/%s\n", *options.Kube.Namespace, options.Ingress)
 			default:
 				fmt.Printf("Unknown resource")
